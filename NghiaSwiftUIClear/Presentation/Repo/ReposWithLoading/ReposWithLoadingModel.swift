@@ -18,8 +18,8 @@ class ReposWithLoadingViewModel: ObservableObject {
     @Published var searchKey = ""
     @Published var loadingMore = true
     @Published var refreshing = true
+    var page: Int8 = 1
     private var disposeBag = Set<AnyCancellable>()
-    private var page: Int8 = 0
     
     init() {
         self.searchTextChange()
@@ -38,22 +38,24 @@ class ReposWithLoadingViewModel: ObservableObject {
         .store(in: &disposeBag)
     }
     
-    func getRepos(_ searchText: String, page: Int8 = 0) async {
+    func getRepos(_ searchText: String, page: Int8 = 1) async {
         errorMessage = ""
         let searchStr = searchText != "" ? searchText : "a"
         self.page = page
         
         // Loading
-        if page == 0 {
+        if page == 1 {
             refreshing = true
         } else {
             loadingMore = true
         }
         
+        // Get Repo
         let result = await getReposUseCase.execute(searchText: searchStr, page: self.page)
         switch result{
         case .success(let repos):
             
+            // Show data
             if page == 0 {
                 // First page
                 self.repos = repos
@@ -61,6 +63,8 @@ class ReposWithLoadingViewModel: ObservableObject {
                 // Load More
                 self.repos.append(contentsOf: repos)
             }
+            
+            // hide loading
             loadingMore = false
             refreshing = false
         case .failure(let error):
@@ -68,10 +72,5 @@ class ReposWithLoadingViewModel: ObservableObject {
             errorMessage = error.localizedDescription
             hasError = true
         }
-    }
-    
-    func getMoreRepos() async {
-        let page = self.page + 1
-        await self.getRepos(searchKey, page: page)
     }
 }

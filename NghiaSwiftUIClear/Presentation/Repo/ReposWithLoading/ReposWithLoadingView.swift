@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ReposWithLoadingView: View {
     @StateObject var vm = ReposWithLoadingViewModel()
-
+    
     var body: some View {
         RepoList()
     }
@@ -21,9 +21,12 @@ struct ReposWithLoadingView: View {
                 repoRow(item)
             }
             
-            // === Load More ===
-            if vm.refreshing || vm.loadingMore {
-                ProgressView()
+            
+            if vm.refreshing {
+                
+            } else if vm.loadingMore {
+                // === Load More ===
+                ProgressView().id(UUID())
             } else {
                 Button(action: loadMore) {
                     Text("Load More")
@@ -38,16 +41,14 @@ struct ReposWithLoadingView: View {
         }
         .refreshable {
             if (!vm.refreshing) {
-                Task {
-                    await vm.getRepos(vm.searchKey)
-                }
+                await vm.getRepos(vm.searchKey)
             }
         }
         .navigationTitle("Repo List")
         // Get data First time
-//        .task {
-//            await vm.getRepos("")
-//        }
+        //        .task {
+        //            await vm.getRepos("")
+        //        }
         .alert("Error", isPresented: $vm.hasError) {
         } message: {
             Text(vm.errorMessage)
@@ -63,14 +64,14 @@ struct ReposWithLoadingView: View {
                 case .success(let image):
                     image.resizable()
                         .aspectRatio(contentMode: .fit)
-                        //.frame(maxWidth: 300, maxHeight: 100)
+                    //.frame(maxWidth: 300, maxHeight: 100)
                 case .failure:
                     Image(systemName: "photo")
                 @unknown default:
                     EmptyView()
                 }
             }
-                .frame(width: 50, height: 50)
+            .frame(width: 50, height: 50)
             Text("\(repo.name)")
         }
     }
@@ -78,7 +79,8 @@ struct ReposWithLoadingView: View {
     func loadMore() {
         print("Load more...")
         Task {
-            await vm.getMoreRepos()
+            let page = vm.page + 1
+            await vm.getRepos(vm.searchKey, page: page)
         }
     }
 }
