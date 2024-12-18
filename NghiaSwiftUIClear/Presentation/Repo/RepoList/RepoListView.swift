@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RepoListView: View {
-    @StateObject var vm = RepoListViewModel()
+    @StateObject var vm = RepoListVM()
 
     var body: some View {
         RepoList()

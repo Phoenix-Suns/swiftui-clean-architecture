@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 @MainActor
-class RepoListViewModel: ObservableObject {
+class RepoListVM: ObservableObject {
     
     var getReposUseCase = GetReposUseCase(repo: RepoRepositoryImpl(dataSource: RepoAPIImpl()))
     @Published var repos: [Repo] = []

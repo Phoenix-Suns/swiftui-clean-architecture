@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 @MainActor
-class ReposWithLoadingViewModel: ObservableObject {
+class ReposWithLoadingVM: ObservableObject {
     
     var getReposUseCase = GetReposUseCase(repo: RepoRepositoryImpl(dataSource: RepoAPIImpl()))
     @Published var repos: [Repo] = []
@@ -27,7 +27,7 @@ class ReposWithLoadingViewModel: ObservableObject {
     
     func searchTextChange() {
         $searchKey
-            .debounce(for: 0.5, scheduler: RunLoop.main) // 0.5 second debounce
+            .debounce(for: 2, scheduler: RunLoop.main) // 0.5 second debounce
             // Called after 2 seconds when text stops updating (stoped typing)
             .sink {
                 let searchText = $0
@@ -40,7 +40,7 @@ class ReposWithLoadingViewModel: ObservableObject {
     
     func getRepos(_ searchText: String, page: Int8 = 1) async {
         errorMessage = ""
-        let searchStr = searchText != "" ? searchText : "a"
+        let searchStr = searchText != "" ? searchText : ""
         self.page = page
         
         // Loading

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ReposWithLoadingView: View {
-    @StateObject var vm = ReposWithLoadingViewModel()
+    @StateObject var vm = ReposWithLoadingVM()
     
     var body: some View {
         RepoList()
